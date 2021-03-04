@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 use Closure;
 
-class UserMiddleware
+class DosenMiddleware
 {
     /**
      * Handle an incoming request.
@@ -17,7 +17,7 @@ class UserMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if ($request->user <> 'mahasiswa' ) {
+        if ($request->dosen <> 'dosen' ) {
             return redirect('/api/auth');
         } else {
             return $next($request);

@@ -1,19 +1,28 @@
 <?php
 
 namespace App\Http\Controllers\Dosen;
+use App\Http\Controllers\Controller; 
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
-class dosenController 
+class DosenController extends Controller
 {
+    
     /**
-     * Display a listing of the resource.
+     * Create a new controller instance.
      *
-     * @return \Illuminate\Http\Response
+     * @return void
      */
+    public function __construct()
+    {
+         $this->middleware('dosen');
+        // $this->middleware('user', ['only' => 'register']);
+    }
     public function index()
     {
-      return response()->json("controller Dosen");
+        return response()->json("Akses Dosen");
     }
 
     /**
@@ -43,9 +52,9 @@ class dosenController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
-        //
+        return response()->json("show Dosen");
     }
 
     /**

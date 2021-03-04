@@ -17,16 +17,22 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-//login
-$router->get('api/login', ['uses' => 'LoginController@index']);
-$router->post('api/login', ['uses' => 'LoginController@login']);
+
+//AuthController
+$router->group(['prefix' => 'api/auth', 'middleware' => 'auth'], function() use ($router) {
+    $router->get('/', ['uses' => 'AuthController@index']);
+    $router->get('register', ['uses' => 'AuthController@register']);
+    $router->post('login', ['uses' => 'AuthController@login']);
+});
+
 
 //pengaturan route
 $router->group(['prefix' => 'api','middleware' => 'auth'], function() use ($router) {
         
     //Layanan Dosen
     $router->group(['namespace' => 'Dosen'], function() use ($router) {
-        $router->get('dosen', ['uses' => 'dosenController@index']);
+        $router->get('dosen', ['uses' => 'DosenController@index']);
+        $router->get('show', ['uses' => 'DosenController@show']);
     });
     //Modul PMB
     $router->group(['namespace' => 'Pmb'], function() use ($router) { 
@@ -38,28 +44,3 @@ $router->group(['prefix' => 'api','middleware' => 'auth'], function() use ($rout
         $router->put('mahasiswa/{id}', ['uses' => 'mahasiswaController@update']);
     });    
 });
-
-// $router->group(['prefix' => 'api', 'middleware' => 'auth'], function() use ($router){
-//     //vid 4
-//     //nama model kiri memanggil, kanan dipanggil controller namakelas@namaFunction
-//     //KategoriModel
-//     $router->get('kategori',['uses' => 'KategoriController@index']);
-//     $router->get('kategori/{id}',['uses' => 'KategoriController@show']);
-//     $router->post('kategori',['uses' => 'KategoriController@create']);
-//     $router->delete('kategori/{id}',['uses' => 'KategoriController@destroy']);
-//     $router->put('kategori/{id}',['uses' => 'KategoriController@update']);
-    
-//     //PelangganModel
-//     $router->get('pelanggan',['uses' => 'PelangganController@index']);
-//     $router->get('pelanggan/{id}',['uses' => 'PelangganController@show']);
-//     $router->post('pelanggan',['uses' => 'PelangganController@create']);
-//     $router->delete('pelanggan/{id}',['uses' => 'PelangganController@destroy']);
-//     $router->put('pelanggan/{id}',['uses' => 'PelangganController@update']);
-
-//     //Menu
-//     $router->post('menu',['uses' => 'MenuController@create']);
-//     $router->get('menu',['uses' => 'MenuController@index']);
-//     $router->get('menu/{id}',['uses' => 'MenuController@show']);
-//     $router->delete('menu/{id}',['uses' => 'MenuController@destroy']);
-//     $router->put('menu/{id}',['uses' => 'MenuController@update']);
-// });
