@@ -19,7 +19,7 @@ $router->get('/', function () use ($router) {
 
 
 //AuthController
-$router->group(['prefix' => 'api/auth', 'middleware' => 'auth'], function() use ($router) {
+$router->group(['prefix' => 'api/auth'], function() use ($router) {
     $router->get('/', ['uses' => 'AuthController@index']);
     $router->get('register', ['uses' => 'AuthController@register']);
     $router->post('login', ['uses' => 'AuthController@login']);

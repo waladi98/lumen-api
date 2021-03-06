@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\ClientModel;
 //use model user
 
 class AuthController extends Controller
@@ -21,56 +22,43 @@ class AuthController extends Controller
         // $this->middleware('user', ['only' => 'register', 'login']);
     }
 
-    public function index()
-    {
-        return response()->json("Akses Di Tolak!!");
+    public function index() {
+        $data = ClientModel::all();
+        return response()->json($data);
     }
-    public function register()
-    {
-        return  response()->json("ini method register");
-    }
+    
+    public function login(Request $request){
 
-    public function login(Request $request)
-    {
-        $username = $request->input('username');
-        $password = $request->input('password');
-
-        $user = DB::select("Call cp_cek_login('$username','$password')");
-
-        if (is_array($user)) {
-            $user = $user[0];
+        $email = $request->input('email');
+        $password = $request->input('password'); 
+        
+        // $data = DB::table('ws_sys_klien')->where('email', $email)->first();
+        $data = ClientModel::where('email', $email)->first();
+        
+        if ($data->password === $password) {
+            //create api-token
+            $apiToken = base64_encode(Str::random(60));
             
-            if ($user->result == "Kode Pengguna tidak ditemukan") {                   
+            $data->update([
+                'token' => $apiToken,
                 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Kode Pengguna tidak ditemukan'
-                ], 404);
-
-            } elseif ($user->result == "OK") {
-                //create api-token
-                $apiToken = base64_encode(Str::random(40));
-                
-                //update api token di DB
-                // $user->update([
-                //     'api_token' => $token
-                // ]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Login Berhasil',
+           ]);
+           return response()->json([
+                'success' => true,
+                'message' => 'Login Berhasil',
                     'data' => [
-                        'user' => $user,
-                        'api-token' => $apiToken
-                    ]
-                    ], 200);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Kata kunci Salah',
-                    'data' => ''
-                ], 400);
-            }
+                         'user' => $data,
+                        ]
+                ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'login gagal',
+                    'data' => [
+                        'user' => null,
+                        'api-token' => ''
+                        ]
+                ], 200);
         }
     }
 }

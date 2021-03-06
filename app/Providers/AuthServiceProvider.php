@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\User;
+use App\Models\ClientModel;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -32,14 +32,17 @@ class AuthServiceProvider extends ServiceProvider
 
         $this->app['auth']->viaRequest('api', function ($request) {
 
-            $token = "situ-new";
+            // $token = "situ-new";
 
-            $header = $request->header('Api-Token');
-            if ($header && $header == $token) {
-                return new User();
-            } 
-            return null;
-            
+            // $header = $request->header('Api-Token');
+            // if ($header && $header == $token) {
+            //     return new User();
+            // } 
+            // return null;
+
+            if ($request->header('token')) {
+                return ClientModel::where('token', $request->header('token'))->first();
+            }
 
             // if ($request->input('api_token')) {
             //     return User::where('api_token', $request->input('api_token'))->first();
