@@ -36,13 +36,12 @@ class AuthController extends Controller
             
             $data->update([
                 'token' => $apiToken,
-                
            ]);
            return response()->json([
                 'success' => true,
                 'message' => 'Login Berhasil',
                     'data' => [
-                         'user' => $data,
+                         'client' => $data,
                         ]
                 ], 200);
         } else {
@@ -50,7 +49,7 @@ class AuthController extends Controller
                 'success' => false,
                 'message' => 'login gagal',
                     'data' => [
-                        'user' => null,
+                        'client' => null,
                         'api-token' => ''
                         ]
                 ], 200);

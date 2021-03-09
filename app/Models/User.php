@@ -18,8 +18,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      *
      * @var array
      */
+    protected $table = 'ws_sys_klien';
+    protected $primaryKey = 'kode';
+    //public $timestamps = false;
+    const CREATED_AT = 'akses_terakhir';
+    const UPDATED_AT = 'akses_terakhir'; 
     protected $fillable = [
-        'name', 'email',
+        'kode',
+        'email',
+        'token',
     ];
 
     /**

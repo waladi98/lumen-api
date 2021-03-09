@@ -20,11 +20,12 @@ $router->get('/', function () use ($router) {
 
 //AuthController
 $router->group(['prefix' => 'auth'], function() use ($router) {
-    $router->post('login', ['uses' => 'AuthController@login']);
+    $router->post('/', ['uses' => 'AuthController@login']);
 });
 
 //pengaturan route
 $router->group(['prefix' => 'mst/pmb', 'middleware' => 'auth'], function() use ($router) {
+    $router->get('users/login', 'UserController@getUserLogin');
     //Modul PMB
     $router->group(['namespace' => 'Pmb'], function() use ($router) {
         //formulir
