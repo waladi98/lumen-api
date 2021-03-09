@@ -22,11 +22,6 @@ class AuthController extends Controller
         // $this->middleware('user', ['only' => 'register', 'login']);
     }
 
-    public function index() {
-        $data = ClientModel::all();
-        return response()->json($data);
-    }
-    
     public function login(Request $request){
 
         $email = $request->input('email');
