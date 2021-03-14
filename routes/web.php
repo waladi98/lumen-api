@@ -17,11 +17,64 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->get('testing', ['uses' => 'Controller@setUser']);
+$router->get('keluar', ['uses' => 'Controller@logout']);
+
+$router->group(['prefix' => 'beranda' , 'middleware' => 'user'], function() use ($router) {
+    $router->get('index', ['uses' => 'Controller@index']);
+    // $router->post('register', ['uses' => 'AuthController@register']);
+});
+
+
+
+
+
 
 //AuthController
 $router->group(['prefix' => 'auth'], function() use ($router) {
-    $router->post('/', ['uses' => 'AuthController@login']);
+    $router->post('/', ['uses' => 'AuthController@loginAuth']);
+    // Save Session
+    
+
+    // $router->post('register', ['uses' => 'AuthController@register']);
 });
+
+$router->group(['prefix' => 'user', 'middleware' => 'auth'], function() use ($router) {
+    $router->post('login', 'UserController@userLogin');
+    //$router->get('login/user', 'UserController@getUserLogin');
+    //cek user yang sedang aktive
+    $router->get('cek-user', 'UserController@getUserLogin');
+    //ketika user belum login
+    $router->get('login2', ['uses' => 'Controller@login']);
+});
+
+$router->group(['prefix' => 'beranda' , 'middleware' => 'user'], function() use ($router) {
+    $router->get('login/user', 'UserController@getUserLogin');
+    $router->get('index', ['uses' => 'Controller@index']);
+    $router->get('logout', 'UserController@logout');
+    // $router->post('register', ['uses' => 'AuthController@register']);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //pengaturan route
 $router->group(['prefix' => 'mst/pmb', 'middleware' => 'auth'], function() use ($router) {
@@ -49,7 +102,24 @@ $router->group(['prefix' => 'mst/pmb', 'middleware' => 'auth'], function() use (
     });
 });
 
+// $router->get('tes', function (
+//     \Illuminate\Http\Request $request) {
 
+//     $request->session()->put('name', 'Lumen-Session');
+
+//     return response()->json([
+//         'session.name' => $request->session()->get('name')
+//     ]);
+//     });
+
+
+// // Test session
+//     $router->get('session', function (\Illuminate\Http\Request $request) {
+
+//         return response()->json([
+//             'session.name' => $request->session()->get('name'),
+//         ]);
+//     });
 
 //pengaturan route
 //$router->group(['prefix' => 'api','middleware' => 'auth'], function() use ($router) {

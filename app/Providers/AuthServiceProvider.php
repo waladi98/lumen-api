@@ -41,7 +41,12 @@ class AuthServiceProvider extends ServiceProvider
             // return null;
 
             if ($request->header('token')) {
-                return ClientModel::where('token', $request->header('token'))->first();
+                $data = [
+                    'token' => $request->header('token')
+                ];
+                $request->session()->put('token', $data);
+                return $klien = ClientModel::where('token', $request->header('token'))->first();
+
             }
 
             // if ($request->input('api_token')) {
