@@ -25,7 +25,7 @@ $router->group(['prefix' => 'auth'], function() use ($router) {
 
 //pengaturan route
 $router->group(['prefix' => 'mst/pmb', 'middleware' => 'auth'], function() use ($router) {
-    $router->get('users/login', 'UserController@getUserLogin');
+    $router->get('users/login', 'UserController@getUserLogin2');
     //Modul PMB
     $router->group(['namespace' => 'Pmb'], function() use ($router) {
         //formulir
