@@ -2,11 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Support\Facades\DB;
-
 use Closure;
 
-class DosenMiddleware
+class CekUserMiddleware
 {
     /**
      * Handle an incoming request.
@@ -16,11 +14,17 @@ class DosenMiddleware
      * @return mixed
      */
     public function handle($request, Closure $next)
-    {
-        if ($request->dosen <> 'dosen' ) {
-            return redirect('/api/auth');
+    {   
+        $user = $request->session()->get('name');
+        $token = $request->session()->get('token');
+        
+        if ($user == null && $token == null) {
+            return redirect('situ/index');
+        } elseif ($user == null ) {
+            return redirect('situ/index');
         } else {
             return $next($request);
         }
+       
     }
 }

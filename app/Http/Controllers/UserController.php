@@ -18,94 +18,121 @@ class UserController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('user');
-        // $this->middleware('user', ['only' => 'register', 'login']);
-       
-    }
-    public function index()
-    {
-        echo 'ini beranda UseController';
+        
+        $this->middleware('cekLogin');
     }
 
-    public function UserLogin(Request $request)
+    public function index(Request $request)
     {
-        $nama = $request->input('nama');
-        $sandi = $request->input('sandi');
+        echo 'ini beranda UseController, user berhasil login';
+    }
+   
+    public function logout(Request $request){       
+        $user = $request->session()->get('name');
+        
+        $user = User::where('nama', $user)->first();
 
-        $user = User::where('nama', $nama)->first();
-
-        if ($user->sandi == $sandi) {
+        if ($user) {
             $user->update([
-                'akses_terakhir' => Carbon::now()
+                'akses_terakhir' => null,
+                 'data' =>[
+                    'session.name' => $request->session()->forget('name'),
+                ]
             ]);
             return response()->json([
                 'success' => true,
-                'message' => 'Login Berhasil',
-                    'data' => $user
+                'message' => 'keluar',
+                'session.name' => $request->session()->get('name'),
+                'session.token' => $request->session()->get('token'),
                 ], 200);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'login gagal',
+                'message' => 'belum login',
                     'data' => ''
                 ], 200);
-        }
+        }        
     }
 
-    public function getUserLogin(Request $request)
-    {
-        return response()->json([
-            'status' => 'klien', 
-            'data1' => $request->user(),
-            'data2' => $request->user()
-            ]);
-    }
-    public function logout(Request $request)
-    {
-        $user = User::where('nama', $nama)->first();
-        $user->update(['akses_terakhir' => null]); //UPDATE VALUENYA JADI NULL
-        return response()->json(['status' => 'success']);
-    }
+    // public function UserLogin(Request $request)
+    // {
+    //     $nama = $request->input('nama');
+    //     $sandi = $request->input('sandi');
+
+    //     $user = User::where('nama', $nama)->first();
+
+    //     if ($user->sandi == $sandi) {
+    //         $user->update([
+    //             'akses_terakhir' => Carbon::now()
+    //         ]);
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Login Berhasil',
+    //                 'data' => $user
+    //             ], 200);
+    //     } else {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'login gagal',
+    //                 'data' => ''
+    //             ], 200);
+    //     }
+    // }
+
+    // public function getUserLogin(Request $request)
+    // {
+    //     return response()->json([
+    //         'status' => 'klien', 
+    //         'data1' => $request->user(),
+    //         'data2' => $request->user()
+    //         ]);
+    // }
+    // public function logout(Request $request)
+    // {
+    //     $user = User::where('nama', $nama)->first();
+    //     $user->update(['akses_terakhir' => null]); //UPDATE VALUENYA JADI NULL
+    //     return response()->json(['status' => 'success']);
+    // }
 
 
-    public function getUserLogin1(Request $request)
-    {
-        $username = $request->header('username');
-        $password = $request->header('password');
+    // public function getUserLogin1(Request $request)
+    // {
+    //     $username = $request->header('username');
+    //     $password = $request->header('password');
 
-        $user = DB::select("Call cp_cek_login('$username','$password')");
+    //     $user = DB::select("Call cp_cek_login('$username','$password')");
 
-        if (is_array($user)) {
-            $user = $user[0];
+    //     if (is_array($user)) {
+    //         $user = $user[0];
             
-            if ($user->result == "Kode Pengguna tidak ditemukan") {                   
+    //         if ($user->result == "Kode Pengguna tidak ditemukan") {                   
                 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Kode Pengguna tidak ditemukan'
-                ], 404);
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Kode Pengguna tidak ditemukan'
+    //             ], 404);
 
-            } elseif ($user->result == "OK") {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Login Berhasil',
-                    'user' => $user,
-                    'Client' => $request->user()
-                    ], 200);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Kata kunci Salah',
-                    'data' => ''
-                ], 400);
-            }
-        }
-    }
-    public function getUserLogin2(Request $request)
-    {
-        return response()->json(
-        ['status' => 'success', 
-        'data' => $request->user()]);
-    }
+    //         } elseif ($user->result == "OK") {
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'message' => 'Login Berhasil',
+    //                 'user' => $user,
+    //                 'Client' => $request->user()
+    //                 ], 200);
+    //         } else {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Kata kunci Salah',
+    //                 'data' => ''
+    //             ], 400);
+    //         }
+    //     }
+    // }
+    // public function getUserLogin2(Request $request)
+    // {
+    //     return response()->json(
+    //     ['status' => 'success', 
+    //     'data' => $request->user()]);
+    // }
     
 }

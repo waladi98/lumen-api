@@ -15,7 +15,7 @@ class SimakMstPmbGuruController extends Controller
      */
     public function __construct()
     {
-        //
+       
     }
     public function getPMBGuru()
     {

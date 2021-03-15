@@ -17,43 +17,68 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->get('testing', ['uses' => 'Controller@setUser']);
-$router->get('keluar', ['uses' => 'Controller@logout']);
 
-$router->group(['prefix' => 'beranda' , 'middleware' => 'user'], function() use ($router) {
-    $router->get('index', ['uses' => 'Controller@index']);
-    // $router->post('register', ['uses' => 'AuthController@register']);
-});
-
-
-
-
-
-
-//AuthController
+//AuthController - getToken //bebas akses
 $router->group(['prefix' => 'auth'], function() use ($router) {
     $router->post('/', ['uses' => 'AuthController@loginAuth']);
-    // Save Session
+    // register Session    
+    // $router->post('register', ['uses' => 'AuthController@register']);
+});
+
+//halaman sebelum login-> syarat token-klien
+$router->group(['prefix' => 'situ', 'middleware' => 'auth'], function() use ($router) {
+    $router->get('index', 'LogController@beranda');   
+});
+
+//akses dasboard user->syarat nama user, sandi user, token klien (header)
+$router->group(['prefix' => 'situ/user' , 'middleware' => 'user'], function() use ($router) {
+    $router->get('login', ['uses' => 'UserController@index']);
+});
+//syarat harus sudah login->nama user dan token
+$router->group(['prefix' => 'situ/user' , 'middleware' => 'cekLogin'], function() use ($router) {
+    $router->get('logout', ['uses' => 'UserController@logout']);
+});
+
+
+$router->group(['prefix' => 'situ/pmb', 'middleware' => 'cekLogin'], function() use ($router) {
     
+    //Modul PMB
+    $router->group(['namespace' => 'Pmb'], function() use ($router) {
+        //formulir
+        $router->get('formulir', ['uses' => 'PmbFormController@index']);
+        $router->get('formulir/{id}', ['uses' => 'PmbFormController@show']);
+        $router->post('formulir', ['uses' => 'PmbFormController@create']);
+        $router->delete('formulir/{id}', ['uses' => 'PmbFormController@destroy']);
+        $router->put('formulir/{id}', ['uses' => 'PmbFormController@update']);
 
-    // $router->post('register', ['uses' => 'AuthController@register']);
+        //gelombang
+        $router->get('gelombang', ['uses' => 'SimakMstPmbGelomController@index']);
+        $router->get('gelombang/{id}', ['uses' => 'SimakMstPmbGelomController@show']);
+        $router->Post('gelombang', ['uses' => 'SimakMstPmbGelomController@create']);
+        $router->delete('gelombang/{id}', ['uses' => 'PmbFormController@destroy']);
+        $router->put('gelombang/{id}', ['uses' => 'SimakMstPmbGelomController@update']);
+
+        //guru
+        $router->get('guru', ['uses' => 'SimakMstPmbGuruController@index']);
+        $router->get('guru/{id}', ['uses' => 'SimakMstPmbGuruController@show']);
+        $router->Post('guru', ['uses' => 'SimakMstPmbGuruController@create']);
+        $router->delete('guru/{id}', ['uses' => 'SimakMstPmbGuruController@destroy']);
+        $router->put('guru/{id}', ['uses' => 'SimakMstPmbGuruController@update']);
+    });
 });
 
-$router->group(['prefix' => 'user', 'middleware' => 'auth'], function() use ($router) {
-    $router->post('login', 'UserController@userLogin');
-    //$router->get('login/user', 'UserController@getUserLogin');
-    //cek user yang sedang aktive
-    $router->get('cek-user', 'UserController@getUserLogin');
-    //ketika user belum login
-    $router->get('login2', ['uses' => 'Controller@login']);
-});
 
-$router->group(['prefix' => 'beranda' , 'middleware' => 'user'], function() use ($router) {
-    $router->get('login/user', 'UserController@getUserLogin');
-    $router->get('index', ['uses' => 'Controller@index']);
-    $router->get('logout', 'UserController@logout');
-    // $router->post('register', ['uses' => 'AuthController@register']);
-});
+
+// $router->get('testing', ['uses' => 'Controller@setUser']);
+// $router->get('login', ['uses' => 'UserController@index']);
+// $router->get('out', ['uses' => 'LogController@index']);
+// $router->get('keluar', ['uses' => 'Controller@logout']);
+// $router->get('logout', ['uses' => 'UserController@logout']);
+
+
+
+
+
 
 
 
@@ -77,30 +102,30 @@ $router->group(['prefix' => 'beranda' , 'middleware' => 'user'], function() use 
 
 
 //pengaturan route
-$router->group(['prefix' => 'mst/pmb', 'middleware' => 'auth'], function() use ($router) {
-    $router->get('users/login', 'UserController@getUserLogin2');
-    //Modul PMB
-    $router->group(['namespace' => 'Pmb'], function() use ($router) {
-        //formulir
-        $router->get('formulir', ['uses' => 'SimakMstPmbFormController@getPMBFormulir']);
-        $router->get('formulir/{id}', ['uses' => 'SimakMstPmbFormController@getById']);
-        $router->post('formulir', ['uses' => 'SimakMstPmbFormController@createFormulir']);
-        $router->put('formulir/{id}', ['uses' => 'SimakMstPmbFormController@updatePMBFormulir']);
+// $router->group(['prefix' => 'mst/pmb', 'middleware' => 'auth'], function() use ($router) {
+//     $router->get('users/login', 'UserController@getUserLogin2');
+//     //Modul PMB
+//     $router->group(['namespace' => 'Pmb'], function() use ($router) {
+//         //formulir
+//         $router->get('formulir', ['uses' => 'SimakMstPmbFormController@getPMBFormulir']);
+//         $router->get('formulir/{id}', ['uses' => 'SimakMstPmbFormController@getById']);
+//         $router->post('formulir', ['uses' => 'SimakMstPmbFormController@createFormulir']);
+//         $router->put('formulir/{id}', ['uses' => 'SimakMstPmbFormController@updatePMBFormulir']);
 
-        //gelombang
-        $router->get('gelombang', ['uses' => 'SimakMstPmbGelomController@getPMBGelombang']);
-        $router->get('gelombang/{id}', ['uses' => 'SimakMstPmbGelomController@getById']);
-        $router->Post('gelombang', ['uses' => 'SimakMstPmbGelomController@createGelombang']);
-        $router->put('gelombang/{id}', ['uses' => 'SimakMstPmbGelomController@updatePMBGelombang']);
+//         //gelombang
+//         $router->get('gelombang', ['uses' => 'SimakMstPmbGelomController@getPMBGelombang']);
+//         $router->get('gelombang/{id}', ['uses' => 'SimakMstPmbGelomController@getById']);
+//         $router->Post('gelombang', ['uses' => 'SimakMstPmbGelomController@createGelombang']);
+//         $router->put('gelombang/{id}', ['uses' => 'SimakMstPmbGelomController@updatePMBGelombang']);
 
-        //guru
-        $router->get('guru', ['uses' => 'SimakMstPmbGuruController@getPMBGuru']);
-        $router->get('guru/{id}', ['uses' => 'SimakMstPmbGuruController@getById']);
-        $router->Post('guru', ['uses' => 'SimakMstPmbGuruController@createGuru']);
-        $router->put('guru/{id}', ['uses' => 'SimakMstPmbGuruController@updatePMBGuru']);
-        $router->delete('guru/{id}', ['uses' => 'SimakMstPmbGuruController@deletePMBGuru']);
-    });
-});
+//         //guru
+//         $router->get('guru', ['uses' => 'SimakMstPmbGuruController@getPMBGuru']);
+//         $router->get('guru/{id}', ['uses' => 'SimakMstPmbGuruController@getById']);
+//         $router->Post('guru', ['uses' => 'SimakMstPmbGuruController@createGuru']);
+//         $router->put('guru/{id}', ['uses' => 'SimakMstPmbGuruController@updatePMBGuru']);
+//         $router->delete('guru/{id}', ['uses' => 'SimakMstPmbGuruController@deletePMBGuru']);
+//     });
+// });
 
 // $router->get('tes', function (
 //     \Illuminate\Http\Request $request) {

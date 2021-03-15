@@ -6,7 +6,7 @@ use Illuminate\Support\Std;
 use Illuminate\Http\Request;
 use App\Models\Pmb\SimakMstPmbFormulir;
 
-class SimakMstPmbFormController extends Controller
+class PmbFormController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -17,7 +17,7 @@ class SimakMstPmbFormController extends Controller
     {
         //
     }
-    public function getPMBFormulir()
+    public function index()
     {
         $data = SimakMstPmbFormulir::all();       
         
@@ -36,7 +36,7 @@ class SimakMstPmbFormController extends Controller
         }        
     }
 
-    public function getById($id)
+    public function show($id)
     {
         $data = SimakMstPmbFormulir::where('PMBFormulirID', $id)->first();     
            
@@ -57,7 +57,7 @@ class SimakMstPmbFormController extends Controller
                 
         }        
     }
-    // public function createFormulir(Request $request)
+    // public function create(Request $request)
     // {
     //     //Validasi data berdasarkan request # 12
     //     $this->validate($request,[
@@ -97,7 +97,13 @@ class SimakMstPmbFormController extends Controller
     //     }
     //     return response()->json($kategori);
     // }
-    public function updatePMBFormulir(Request $request, $id)
+    public function destroy($id)
+    {
+        //Hapus data berdasarkan ID
+        // Kategori::where('idKategori', $id)->delete();
+        // return response()->json("Delete Data $id");
+    }
+    public function update(Request $request, $id)
     {
         //Update Data
         $data = SimakMstPmbFormulir::where('PMBFormulirID',$id)->update($request->all());

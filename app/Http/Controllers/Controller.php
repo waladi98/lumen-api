@@ -7,70 +7,58 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
-    {
-        // $this->middleware('user');
-        // $this->middleware('user', ['only' => 'register', 'login']);
-        // if ($this->session()->has('users')) {
-        //     echo 'ini index beranda';
-        // }
-        // if (!$this->session->userdata('nama')) {
-        //     return redirect('user/login2');
-        // }
+    {   
+        //$this->middleware('cekLogin');
 
     }
-
+    public function cek()
+    {
+        echo 'session ada !';
+    }
     public function setUser(Request $request){
         return response()->json([
+            'success' => true,
             'session.name' => $request->session()->get('name'),
             'session.token' => $request->session()->get('token'),
-        ]);
-    }
-
-    public function logout(Request $request){       
-        $user = $request->session()->get('name');
-        $token = $request->session()->get('token');
-
-        $user = User::where('nama', $user)->first();
-
-        if ($user) {
-            $user->update([
-                'akses_terakhir' => null,
-                 'data' =>[
-                    'session.name' => $request->session()->forget('name'),
-                    'session.token' => $request->session()->forget('token')
-                ]
-            ]);
-            return response()->json([
-                'success' => true,
-                'message' => 'keluar',
-                'session.name' => $request->session()->get('name'),
-                'session.token' => $request->session()->get('token'),
-                ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'belum login',
-                    'data' => ''
-                ], 200);
-        }
-        
-        
-        // $request->session->forget('token');
+            ], 200);
+        // return response()->json([
+        //     'session.name' => $request->session()->get('name'),
+        //     'session.token' => $request->session()->get('token'),
+        // ]);
+        // if ($request->session()->get('name') == null && $request->session()->get('token') == null) {
+        //     return response()->json([
+        //         'session.name' => $request->session()->get('name'),
+        //         'session.token' => $request->session()->get('token'),
+        //     ]);
+        // }
+        //  else {
+        //     return response()->json([
+        //         'session.name' => $request->session()->get('name'),
+        //         'session.token' => $request->session()->get('token'),
+        //     ]);
+        // }
         
     }
+
+    
 
 
     public function login(){
         echo 'anda harus  login';
     }
-    public function index(Request $request){
-        echo 'ini beranda';
-        // return response()->json([
-        //     'session.name' => $request->session()->get('name'),
-        //     'session.token' => $request->session()->get('token'),
-        // ]);
-    }
+    // public function index(Request $request){
+    //     echo 'ini beranda';
+    //     // return response()->json([
+    //     //     'session.name' => $request->session()->get('name'),
+    //     //     'session.token' => $request->session()->get('token'),
+    //     // ]);
+    // }
 
     
 }
