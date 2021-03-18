@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 use App\Models\ClientModel;
 //use model user
 
-class AuthController extends Controller
+class AuthController extends SITUController
 {
     /**
      * Create a new controller instance.
@@ -31,24 +31,35 @@ class AuthController extends Controller
         // $data = DB::table('ws_sys_klien')->where('email', $email)->first();
         $klien = ClientModel::where('email', $email)->first();//objek
         
-        if (Hash::check($password, $klien->password)) {
-            //create api-token
-            $apiToken = base64_encode(Str::random(60));
-            
-            $klien->update([
-                'token' => $apiToken,
-           ]);
-           return response()->json([
-                'success' => true,
-                'message' => 'Login Berhasil',
-                    'data' => [
-                         'client' => $klien,
-                        ]
-                ], 200);
+        if ($klien) {
+            if (Hash::check($password, $klien->password)) {
+                //create api-token
+                $apiToken = base64_encode(Str::random(60));
+                
+                $klien->update([
+                    'token' => $apiToken,
+               ]);
+               return response()->json([
+                    'status' => true,
+                    'message' => 'Login Berhasil',
+                        'data' => [
+                             'client' => $klien,
+                            ]
+                    ], 201);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'sandi Salah',
+                        'data' => [
+                            'client' => null,
+                            'api-token' => ''
+                            ]
+                    ], 404);
+            }
         } else {
             return response()->json([
-                'success' => false,
-                'message' => 'login gagal',
+                'status' => false,
+                'message' => 'Akun pengguna Tidak Tersedia!',
                     'data' => [
                         'client' => null,
                         'api-token' => ''

@@ -23,7 +23,10 @@ class UserMiddleware
     public function handle($request, Closure $next, $guard = null)
     {
         if ($this->auth->guard($guard)->guest()) {
-            return response('Request User Di Tolak!', 401);
+            return response()->json([
+                'status' => false,
+                'message' => 'Request User Di Tolak!'
+                ], 401);
         } else {
          
             $nama = $request->header('nama');
@@ -46,10 +49,17 @@ class UserMiddleware
                     return $next($request);
                     
                 } else {
-                    return response()->json("kata sandi salah");
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'kata sandi salah'
+                        ], 401);
                 }
             } else {
-                return response()->json("Kode Pengguna tidak ditemukan");
+                
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Kode Pengguna tidak ditemukan'
+                    ], 401);
             }              
         }
     }

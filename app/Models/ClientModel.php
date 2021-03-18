@@ -37,7 +37,7 @@ class ClientModel extends Model implements AuthenticatableContract, Authorizable
      * @var array
      */
     protected $hidden = [
-       
+        'kode',
         'password',
         'pin'
     ];

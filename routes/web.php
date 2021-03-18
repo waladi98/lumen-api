@@ -20,9 +20,9 @@ $router->get('/', function () use ($router) {
 
 //AuthController - getToken //bebas akses
 $router->group(['prefix' => 'auth'], function() use ($router) {
-    $router->post('/', ['uses' => 'AuthController@loginAuth']);
+    $router->post('login', ['uses' => 'AuthController@loginAuth']);
     // register Session    
-    // $router->post('register', ['uses' => 'AuthController@register']);
+    //$router->post('register', ['uses' => 'AuthController@register']);
 });
 
 //halaman sebelum login-> syarat token-klien
@@ -32,24 +32,25 @@ $router->group(['prefix' => 'situ', 'middleware' => 'auth'], function() use ($ro
 
 //akses dasboard user->syarat nama user, sandi user, token klien (header)
 $router->group(['prefix' => 'situ/user' , 'middleware' => 'user'], function() use ($router) {
-    $router->get('login', ['uses' => 'UserController@index']);
+    $router->post('login', ['uses' => 'UserController@userLogin']);
 });
+
 //syarat harus sudah login->nama user dan token
 $router->group(['prefix' => 'situ/user' , 'middleware' => 'cekLogin'], function() use ($router) {
     $router->get('logout', ['uses' => 'UserController@logout']);
 });
-
+//cek hak akses
 
 $router->group(['prefix' => 'situ/pmb', 'middleware' => 'cekLogin'], function() use ($router) {
-    
     //Modul PMB
     $router->group(['namespace' => 'Pmb'], function() use ($router) {
+        
         //formulir
-        $router->get('formulir', ['uses' => 'PmbFormController@index']);
-        $router->get('formulir/{id}', ['uses' => 'PmbFormController@show']);
-        $router->post('formulir', ['uses' => 'PmbFormController@create']);
-        $router->delete('formulir/{id}', ['uses' => 'PmbFormController@destroy']);
-        $router->put('formulir/{id}', ['uses' => 'PmbFormController@update']);
+        $router->get('formulir', ['uses' => 'PmbFormController@getData']);
+        $router->get('formulir/{id}', ['uses' => 'PmbFormController@showData']);
+        $router->post('formulir', ['uses' => 'PmbFormController@createData']);
+        $router->delete('formulir/{id}', ['uses' => 'PmbFormController@deleteData']);
+        $router->put('formulir/{id}', ['uses' => 'PmbFormController@editData']);
 
         //gelombang
         $router->get('gelombang', ['uses' => 'SimakMstPmbGelomController@index']);

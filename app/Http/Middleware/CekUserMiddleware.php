@@ -21,7 +21,10 @@ class CekUserMiddleware
         if ($user == null && $token == null) {
             return redirect('situ/index');
         } elseif ($user == null ) {
-            return redirect('situ/index');
+            return response()->json([
+                'status' => false,
+                'message' => 'Request User Di Tolak!'
+                ], 401);
         } else {
             return $next($request);
         }

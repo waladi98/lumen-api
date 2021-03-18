@@ -9,7 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 //use model user
 
-class UserController extends Controller
+class UserController extends SITUController
 {
     /**
      * Create a new controller instance.
@@ -22,9 +22,16 @@ class UserController extends Controller
         $this->middleware('cekLogin');
     }
 
-    public function index(Request $request)
+    public function userLogin(Request $request)
     {
-        echo 'ini beranda UseController, user berhasil login';
+        return response()->json([
+            'success' => true,
+            'message' => 'Login Berhasil',
+                'data' => [
+                    'session.name' => $request->session()->get('name'),
+                    'session.token' => $request->session()->get('token')
+                    ]
+            ], 201);
     }
    
     public function logout(Request $request){       
@@ -41,16 +48,16 @@ class UserController extends Controller
             ]);
             return response()->json([
                 'success' => true,
-                'message' => 'keluar',
+                'message' => 'Logout Berhasil',
                 'session.name' => $request->session()->get('name'),
                 'session.token' => $request->session()->get('token'),
-                ], 200);
+                ], 201);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'belum login',
                     'data' => ''
-                ], 200);
+                ], 404);
         }        
     }
 

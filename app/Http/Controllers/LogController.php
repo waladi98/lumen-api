@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-class LogController extends Controller
+class LogController extends SITUController
 {
     /**
      * Create a new controller instance.
@@ -14,7 +14,7 @@ class LogController extends Controller
        
     }
 
-    public function index(Request $request)
+    public function index2(Request $request)
     {
         return response()->json([
             'success' => false,
@@ -28,7 +28,7 @@ class LogController extends Controller
     {
         return response()->json([
             'success' => true,
-            'message' => 'halaman dasboard, user belum login',
+            'message' => 'menu umum',
             'session.name' => $request->session()->get('name'),
             'session.token' => $request->session()->get('token'),
             ], 200);

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-class LoginController extends Controller
+class LoginController extends SITUController
 {
     /**
      * Create a new controller instance.

@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Pmb;
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\SITUController; 
 use Illuminate\Support\Std;
 use Illuminate\Http\Request;
 use App\Models\Pmb\SimakMstPmbGelombang;
 
-class SimakMstPmbGelomController extends Controller
+class SimakMstPmbGelomController extends SITUController
 {
     /**
      * Create a new controller instance.

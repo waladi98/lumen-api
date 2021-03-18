@@ -22,8 +22,10 @@ class SimakMstPmbFormulir extends Model implements AuthenticatableContract, Auth
     protected $primaryKey = 'PMBFormulirID';
     //public $timestamps = false;
     const CREATED_AT = 'TanggalBuat';
-    const UPDATED_AT = 'TanggalEdit'; 
+    const UPDATED_AT = 'TanggalEdit';
+   
     protected $fillable = [
+        'PMBFormulirID',
         'Nama',
         'KodeID',
         'JumlahPilihan', 
@@ -33,6 +35,7 @@ class SimakMstPmbFormulir extends Model implements AuthenticatableContract, Auth
         'HanyaProdi2',
         'KecualiProdi2',
         'HanyaProdi3',
+        'KecualiProdi3',
         'Keterangan',
         'NA',
         'LoginEdit',
