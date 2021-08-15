@@ -20,9 +20,9 @@ class ClientModel extends Model implements AuthenticatableContract, Authorizable
      */
     protected $table = 'ws_sys_klien';
     protected $primaryKey = 'kode';
-    //public $timestamps = false;
     const CREATED_AT = 'akses_terakhir';
-    const UPDATED_AT = 'akses_terakhir'; 
+    const UPDATED_AT = 'akses_terakhir';
+     
     protected $fillable = [
         'kode',
         'email',
@@ -37,7 +37,7 @@ class ClientModel extends Model implements AuthenticatableContract, Authorizable
      * @var array
      */
     protected $hidden = [
-        'kode',
+        // 'kode',
         'password',
         'pin'
     ];

@@ -4,7 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
-
+use App\Models\User;
+use Carbon\Carbon;
 class Authenticate
 {
     /**
@@ -35,10 +36,23 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
+        //middleware->auth
         if ($this->auth->guard($guard)->guest()) {
-            return response('Unauthorized token invalid.', 401);
+            return response()->json([
+                'status' => false,
+                'message' => 'Request Klien Di Tolak!',
+                'Token' => 'Token tidak Valid'
+                ], 401);
+        } else {
+            $waktu = Carbon::now();
+            $data = [
+                'akses_terakhir' => $waktu,
+            ]; 
+            $user = $request->session()->get('name');
+            //jika valid
+            $data = User::where('nama', $user)->update($data);
+            return $next($request);
         }
-
-        return $next($request);
+        
     }
 }

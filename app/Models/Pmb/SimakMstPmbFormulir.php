@@ -20,7 +20,7 @@ class SimakMstPmbFormulir extends Model implements AuthenticatableContract, Auth
      */
     protected $table = 'simak_mst_pmb_formulir';
     protected $primaryKey = 'PMBFormulirID';
-    //public $timestamps = false;
+   // public $timestamps = false;
     const CREATED_AT = 'TanggalBuat';
     const UPDATED_AT = 'TanggalEdit';
    
@@ -39,7 +39,11 @@ class SimakMstPmbFormulir extends Model implements AuthenticatableContract, Auth
         'Keterangan',
         'NA',
         'LoginEdit',
+        'TanggalEdit',
         'LoginBuat',
+        'TanggalBuat',
+       
+        
     ];
 
     /**

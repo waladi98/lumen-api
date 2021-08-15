@@ -87,10 +87,12 @@ $app->configure('app');
 $app->middleware([
     App\Http\Middleware\CorsMiddleware::class,
     \Illuminate\Session\Middleware\StartSession::class,
+    
 ]);
 
+
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class,
+    'klien' => App\Http\Middleware\Authenticate::class,
     'user' => App\Http\Middleware\UserMiddleware::class,
     'cekLogin' => App\Http\Middleware\CekUserMiddleware::class,
 ]);

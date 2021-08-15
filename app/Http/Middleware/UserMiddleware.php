@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Middleware;
-use App\Models\ClientModel;
+
+
 use App\Models\User;
+use App\Models\Pengguna\UserOtorisasi;
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Contracts\Auth\Factory as Auth;
-class UserMiddleware
+class UserMiddleware 
 {
     /**
      * Handle an incoming request.
@@ -22,43 +24,44 @@ class UserMiddleware
     }
     public function handle($request, Closure $next, $guard = null)
     {
+        //middleware->user
+        //cek token klien
         if ($this->auth->guard($guard)->guest()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Request User Di Tolak!'
+                'message' => 'Request User Di Tolak!',
+                'Token' => 'Token tidak Valid'
                 ], 401);
         } else {
-         
-            $nama = $request->header('nama');
-            $sandi = $request->header('sandi');
+            //jika token valid
+            $nama = $request->input('nama');
+            $sandi = $request->input('sandi');
         
             // $klien = ClientModel::where('token', $token)->first();
             $user = User::where('nama', $nama)->first();
         
-            if ($user ) {
+            if ($user) {
                 if ($user->sandi == $sandi) {
-                    $data = [
-                        'nama' => $user->nama,
-                    ];
-                    
+                    //simpan kode-penguna pengguna yang login
+                    $data = $user->nama;
                     $request->session()->put('name', $data);
-                
+                    //update waktu akses terakhir
                     $user->update([
                         'akses_terakhir' => Carbon::now()
                     ]);
+                    //lanjutkan request
                     return $next($request);
-                    
                 } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'kata sandi salah'
+                        'message' => 'kata sandi pengguna salah'
                         ], 401);
                 }
             } else {
                 
                 return response()->json([
                     'status' => false,
-                    'message' => 'Kode Pengguna tidak ditemukan'
+                    'message' => 'Akun Pengguna tidak ditemukan pada Aplikasi'
                     ], 401);
             }              
         }

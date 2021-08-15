@@ -24,6 +24,13 @@ class AuthController extends SITUController
     
     //buat token untuk klien
     public function loginAuth(Request $request){
+        
+        //Validasi data berdasarkan request # 12
+        $this->validate($request,[
+            'email' => 'required',
+            'password' => 'required',
+            //12 atribut
+        ]);
 
         $email = $request->input('email');
         $password = $request->input('password'); 
@@ -41,7 +48,7 @@ class AuthController extends SITUController
                ]);
                return response()->json([
                     'status' => true,
-                    'message' => 'Login Berhasil',
+                    'message' => 'Login Klien Berhasil',
                         'data' => [
                              'client' => $klien,
                             ]
@@ -49,7 +56,7 @@ class AuthController extends SITUController
             } else {
                 return response()->json([
                     'status' => false,
-                    'message' => 'sandi Salah',
+                    'message' => 'sandi Klien Salah',
                         'data' => [
                             'client' => null,
                             'api-token' => ''
@@ -59,7 +66,7 @@ class AuthController extends SITUController
         } else {
             return response()->json([
                 'status' => false,
-                'message' => 'Akun pengguna Tidak Tersedia!',
+                'message' => 'Akun Klien Tidak Tersedia!',
                     'data' => [
                         'client' => null,
                         'api-token' => ''
@@ -68,6 +75,43 @@ class AuthController extends SITUController
         }
     }
 
+    public function register(Request $request)
+    {
+        //Validasi data berdasarkan request # 12
+        $this->validate($request,[
+            'kode' => 'required|unique:ws_sys_klien',
+            'email' => 'required | email |unique:ws_sys_klien',
+            'password' => 'required | ',
+            'pin' => 'required | numeric',
+            //12 atribut
+        ]);
+    
+        $kode = $request->input('kode');
+        $email = $request->input('email');
+        $password = Hash::make($request->input('password'));
+        $pin = $request->input('pin');
+        
+        $register = ClientModel::create([
+            'kode' => $kode,
+            'email' => $email,
+            'password' => $password,
+            'pin' => $pin
+        ]);
+
+        if ($register) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Klien Baru Berhasil Ditambahkan',
+                'data' => $register
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Klien Tidak Berhasil Ditambahkan',
+                'data' => ''
+            ], 401);
+        }       
+    }
     // public function register(Request $request)
     // {
     //     $kode = $request->input('kode');

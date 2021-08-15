@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use App\Models\Pengguna\UserOtorisasi;
 use App\Models\User;
 use Illuminate\Support\Std;
 use Illuminate\Support\Facades\DB;
@@ -23,22 +23,22 @@ class SITUController extends BaseController
     public function index($tabel){
 
         if ($tabel) {
-            $query =DB::table($tabel)->get();
+            $query = DB::table($tabel)->paginate(20);
             
             $results = $query;
             
-            if ($results) {
+            if ($results != null) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'succsess',
-                    'data' => $results 
-                    ], 201);
+                    'message' => 'Request Sukses',
+                    'result' => $results 
+                    ], 200);
             } else {
                 return response()->json([
-                    'status' => false,
-                    'message' => 'data not found',
-                    'data' => ''
-                ]);
+                    'status' => true,
+                    'message' => 'Request Sukses',
+                    'data' => null
+                ], 200);
             }
         }  else {
             return response()->json([
@@ -60,12 +60,15 @@ class SITUController extends BaseController
             return response()->json([
                 'success' => true,
                 'message' => 'succsess',
-                'data' => $results 
+                'data' => [
+                    $results 
+                ]
                 ], 201);
         } else {
             return response()->json([
                 'status' => false,
-                'message' => 'data not found',
+                'message' => "Data dengan ID[$id] tidak ditemukan",
+               // 'message' => "Data dengan ID[$id] tidak ditemukan",
                 'data' => ''
                 ], 404);
         }    
@@ -81,10 +84,8 @@ class SITUController extends BaseController
             return response()->json([
                 'success' => true,
                 'message' => 'Tambah data Berhasil',
-                'result' => [
-                    'data' => $results
-                ]
-                ], 200);
+                'result' => [$data]
+                ], 201);
         } else {
             return response()->json([
                 'status' => false,
@@ -102,7 +103,7 @@ class SITUController extends BaseController
              return response()->json([
                  'success' => true,
                  'message' => 'Berhasil Menghapus Data',
-                 'PMBFormulirID' => $id
+                 $kolom => $id
                  ], 201);
         } else {
             return response()->json([
@@ -121,7 +122,8 @@ class SITUController extends BaseController
             return response()->json([
                 'success' => true,
                 'message' => 'Update data succsess',
-                ], 200);
+                $kolom => $id
+                ], 201);
         }else {
             return response()->json([
                 'status' => false,
@@ -131,6 +133,33 @@ class SITUController extends BaseController
         }
     }
 
-    
+    //buat log login pengguna
+    public function createUserLogin($kodePengguna,$kodeKlien,$waktu){
 
+        $data = [
+            'kode_pengguna' => $kodePengguna,
+            'kode_klien' => $kodeKlien,
+            'waktu_login' => $waktu,
+        ];
+        $cek = UserOtorisasi::where('kode_pengguna', $kodePengguna)->first();
+        if ($cek) {
+            $cek->update([
+                'waktu_login' => $waktu
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Login User Sukses SITU',
+                'kode-pengguna' => $kodePengguna,
+                'kode-klien' => $kodeKlien
+                ], 201);
+        } else {
+            $userLogin = UserOtorisasi::create($data);
+            return response()->json([
+                'success' => true,
+                'message' => 'Login User Sukses',
+                'kode-pengguna' => $kodePengguna,
+                'kode-klien' => $kodeKlien
+                ], 201);
+        }
+    }
 }

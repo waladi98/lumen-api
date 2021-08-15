@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\ClientModel;
+use App\Models\Pengguna\UserOtorisasi;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -19,127 +20,97 @@ class UserController extends SITUController
     public function __construct()
     {
         
-        $this->middleware('cekLogin');
+
     }
 
+    //user login ke aplikasi situ 
     public function userLogin(Request $request)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Login Berhasil',
-                'data' => [
-                    'session.name' => $request->session()->get('name'),
-                    'session.token' => $request->session()->get('token')
-                    ]
-            ], 201);
-    }
-   
-    public function logout(Request $request){       
-        $user = $request->session()->get('name');
-        
-        $user = User::where('nama', $user)->first();
+        //simpan kode-klien dan nama pengguna dari session
+        $token = $request->session()->get('token');
+        $Pengguna = $request->session()->get('name');
 
+        //cek token dan nama pengguna
+        $user = User::where('nama', $Pengguna)->first();
+        $klien = ClientModel::where('token', $token)->first();
+        
+        //simpan value disetiap variabel
+        $kodeKlien = $klien->email;
+        $kodePengguna = $user->kode;
+        $waktu = $user->akses_terakhir;
+
+        //kirim data ke method parent SITUController
+        $data = parent::createUserLogin($kodePengguna,$kodeKlien,$waktu);
+        return $data;
+    }
+    
+   //user logout dari aplikasi situ
+    public function logout(Request $request){       
+        $userKode = $request->header('username');
+
+        $kodePengguna = $userKode;
+        $waktu = Carbon::now();
+            $data = [
+                'waktu_logout' => $waktu,
+            ]; 
+        $user = User::where('kode', $kodePengguna)->first();
         if ($user) {
-            $user->update([
-                'akses_terakhir' => null,
-                 'data' =>[
-                    'session.name' => $request->session()->forget('name'),
-                ]
-            ]);
+            $logUser = UserOtorisasi::where('kode_pengguna', 'LIKE', '%'. $user->kode .'%')->update($data);
             return response()->json([
                 'success' => true,
-                'message' => 'Logout Berhasil',
-                'session.name' => $request->session()->get('name'),
-                'session.token' => $request->session()->get('token'),
+                'message' => 'Logout Berhasil'
+                // 'session.name' => $request->session()->forget('name'),
+                // 'session.token' => $request->session()->forget('token'),
                 ], 201);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'belum login',
+                'message' => 'User belum login',
                     'data' => ''
                 ], 404);
         }        
-    }
-
-    // public function UserLogin(Request $request)
-    // {
-    //     $nama = $request->input('nama');
-    //     $sandi = $request->input('sandi');
-
-    //     $user = User::where('nama', $nama)->first();
-
-    //     if ($user->sandi == $sandi) {
-    //         $user->update([
-    //             'akses_terakhir' => Carbon::now()
-    //         ]);
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Login Berhasil',
-    //                 'data' => $user
-    //             ], 200);
-    //     } else {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'login gagal',
-    //                 'data' => ''
-    //             ], 200);
-    //     }
-    // }
-
-    // public function getUserLogin(Request $request)
-    // {
-    //     return response()->json([
-    //         'status' => 'klien', 
-    //         'data1' => $request->user(),
-    //         'data2' => $request->user()
-    //         ]);
-    // }
-    // public function logout(Request $request)
-    // {
-    //     $user = User::where('nama', $nama)->first();
-    //     $user->update(['akses_terakhir' => null]); //UPDATE VALUENYA JADI NULL
-    //     return response()->json(['status' => 'success']);
-    // }
-
-
-    // public function getUserLogin1(Request $request)
-    // {
-    //     $username = $request->header('username');
-    //     $password = $request->header('password');
-
-    //     $user = DB::select("Call cp_cek_login('$username','$password')");
-
-    //     if (is_array($user)) {
-    //         $user = $user[0];
-            
-    //         if ($user->result == "Kode Pengguna tidak ditemukan") {                   
-                
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Kode Pengguna tidak ditemukan'
-    //             ], 404);
-
-    //         } elseif ($user->result == "OK") {
-    //             return response()->json([
-    //                 'success' => true,
-    //                 'message' => 'Login Berhasil',
-    //                 'user' => $user,
-    //                 'Client' => $request->user()
-    //                 ], 200);
-    //         } else {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Kata kunci Salah',
-    //                 'data' => ''
-    //             ], 400);
-    //         }
-    //     }
-    // }
-    // public function getUserLogin2(Request $request)
-    // {
-    //     return response()->json(
-    //     ['status' => 'success', 
-    //     'data' => $request->user()]);
-    // }
+    }   
     
+    //merubah password
+    public function changePassword(Request $request){
+        //Validasi data berdasarkan request
+        $this->validate($request,[
+            'current_password' => 'required',
+            'new_password' => 'required|min:5|same:password_confirmation|different:current_password',
+            'password_confirmation' => 'required|min:5|same:new_password',
+        ]);
+        
+        $sandi = $request->input('current_password');
+        $userKode =  $userKode = $request->header('username');
+        
+        $user = User::where('kode', $userKode)->first();
+
+        if ($user) {
+            if ( $sandi == $user->sandi) {
+                $sandiBaru = $request->input('new_password');
+                $KonfirmasiSandi = $request->input('password_confirmation');
+    
+                $user->update([
+                    'sandi' => $KonfirmasiSandi
+                ]);
+    
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Kata Sandi Berhasil Diperbarui',
+                    ], 201);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kata sandi gagal diperbarui',
+                    'error' => 'sandi lama pengguna tidak cocok'
+                    ], 404);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kata sandi tidak sesuai dengan akun pengguna!',
+                'error' => 'sandi lama pengguna tidak cocok'
+                ], 404);
+        }  
+    }
 }
